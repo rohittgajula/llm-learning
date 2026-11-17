@@ -1,6 +1,6 @@
 #!/bin/bash
 # Commits and pushes anything new in notes/. Run by launchd whenever notes/ changes.
-REPO="$HOME/Desktop/lms-learning"
+REPO="$HOME/lms-learning"
 LOG="$HOME/Library/Logs/lms-learning-autopush.log"
 
 exec >>"$LOG" 2>&1

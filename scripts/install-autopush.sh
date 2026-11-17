@@ -1,12 +1,14 @@
 #!/bin/bash
 # Installs a launchd agent that runs auto-push.sh whenever notes/ changes.
-# Run once on each laptop after cloning the repo to ~/Desktop/lms-learning.
+# Run once on each laptop after cloning the repo to ~/lms-learning.
+# The real folder lives outside Desktop because macOS blocks background jobs from reading Desktop.
 set -e
-REPO="$HOME/Desktop/lms-learning"
+REPO="$HOME/lms-learning"
 LABEL="com.rohit.lms-learning.autopush"
 PLIST="$HOME/Library/LaunchAgents/$LABEL.plist"
 
 chmod +x "$REPO/scripts/auto-push.sh"
+[ -e "$HOME/Desktop/lms-learning" ] || ln -s "$REPO" "$HOME/Desktop/lms-learning"
 mkdir -p "$HOME/Library/LaunchAgents" "$HOME/Library/Logs"
 
 cat >"$PLIST" <<EOF
