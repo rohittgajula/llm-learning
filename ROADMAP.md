@@ -1,9 +1,38 @@
-# LLM-from-scratch roadmap
+# LLM & Applied AI Engineer roadmap
 
-The LearnHarness map for this course, copied as-is from the LLMs session. Goal: build a tiny GPT on a book in PyTorch on a Mac.
+Goal: an **Applied AI / LLM Engineer** role in about 4 months. Two tracks, learned side by side:
 
-This is the map as of 2026-11-17, after adding the extra math nodes, the BUILD checkpoints, and marking post-build topics as brief. If LearnHarness changes it again, the latest version is in the newest export in `notes/`.
+- **Part A, LLM internals:** the LearnHarness map, copied as-is from the LLMs session (as of 2026-11-17, after adding the extra math nodes, the BUILD checkpoints, and marking post-build topics as brief). If LearnHarness changes it, the latest version is in the newest export in `notes/`; update Part A from it.
+- **Part B, applied AI engineer:** building production features on top of existing models. Self-study and projects; **not in LearnHarness**, so Part B is maintained here by hand.
 
+Items marked **(light)** only need working knowledge, not depth. Which concepts get a problem, a BUILD or a project step, and what's done: [PROGRESS.md](PROGRESS.md).
+
+## 4-month plan
+Target: about **135 hours over ~17 weeks, ~8 hours a week (~70 minutes a day)**. Every concept in Part A and Part B stays; the internals are taught at lower depth instead of being cut.
+
+**Part A, LLM internals: ~50 hours (down from ~100)**
+* **Math (~7h):** every node kept, intuition plus one worked example each (~25 min); no calculus drills.
+* **Training (~10h):** concepts kept; backprop taught conceptually. BUILDs shortened: NumPy line fit (~2h), mini micrograd for a single neuron (~3h instead of a full engine).
+* **Neural nets & PyTorch (~5h):** every node kept, short lessons.
+* **Text (~6h):** every node kept; bigram BUILD kept but small (~2h).
+* **Transformer & generation (~10h):** full depth (this is what interviews ask about).
+* **Tiny GPT BUILD (~10h):** code-along (e.g., Karpathy's "Let's build GPT") rather than from scratch.
+* **After-build "brief" topics (~3h):** ~20 min each. Prompting, vector DB and RAG are learned in Part B, not twice.
+
+**Part B, applied AI engineer: ~85 hours**, learned mostly through 2 portfolio projects (a RAG app with evals; an agent with MCP tools). "(light)" items stay light; pillar 6 is mostly reading.
+
+| Weeks | Internals | Applied |
+|---|---|---|
+| 1–4 | Math + training, line fit + mini micrograd (~20h) | Pillar 1: LLM APIs (~12h) |
+| 5–8 | Neural nets, PyTorch, text, bigram, transformer (~20h) | Pillar 4: evals & observability (~12h) |
+| 9–12 | Generation + tiny GPT code-along (~12h) | Pillar 2: RAG + project 1 (~20h) |
+| 13–17 | After-build brief topics (~3h) | Pillars 3, 5, 7 + project 2 (~25h), pillar 6 reading (~5h) |
+
+If a phase runs over, extend by a week or two rather than cutting a concept.
+
+---
+
+# Part A: LLM internals (LearnHarness map)
 ```mermaid
 graph TD
   rise-over-run[Slope = rise/run]
@@ -205,3 +234,57 @@ graph TD
 | Prompting / system prompts | Steering a model with instructions |
 | Embeddings + vector DB | Storing text as vectors and searching by meaning |
 | RAG (full depth) | Retrieving relevant text and giving it to the model to answer from; how you actually ask questions about the book |
+
+---
+
+# Part B: Applied AI engineer (self-study, not in LearnHarness)
+
+### Pillar 1. Context Engineering & Resilient LLM APIs
+* **Structured Outputs & Schema Enforcement:** Getting schema-valid JSON/typed responses using Pydantic, tool schemas, and constrained decoding. Schema-valid is not the same as correct or deterministic: still validate the values. Constrained decoding: know what it is **(light)**.
+* **Context & Memory Architecture:** Designing system prompts, few-shot patterns, dynamic context assembly, sliding-window vs. summary memory, and **prompt caching** (to reduce latency and token costs).
+* **Model Selection & Capabilities:** Reasoning/thinking models vs. fast models, context-window limits, cost/latency/quality tradeoffs, model deprecations and migrations (prompts often break when the model changes; re-run evals on every switch).
+* **Multimodal Inputs:** Sending PDFs, images, and screenshots directly to the model; speech-to-text for voice input.
+* **Production API Patterns:** Streaming responses (SSE), exponential backoff retries, timeouts, rate-limit handling, and multi-model routing (routing simple tasks to fast/cheap models and complex tasks to reasoning models). Semantic caching (Redis) **(light)**: it can return wrong answers for similar-looking but different questions; prefer prompt caching.
+* **Provider Fallback & Gateways:** LiteLLM or an LLM gateway in front of several providers, so an outage or a model change doesn't take the feature down.
+* **Async & Batch LLM Workloads:** Queues, batch APIs (about 50% cheaper), long-running jobs, and durable execution (Celery/Temporal) for LLM work that doesn't need an instant answer.
+
+### Pillar 2. Production-Grade RAG (Retrieval-Augmented Generation)
+* **Long Context vs. RAG:** Deciding when to put the whole document in the prompt (with prompt caching) instead of building retrieval. Many apps no longer need RAG.
+* **Document Ingestion & Chunking:** Parsing messy PDFs, tables, and code; recursive, semantic, and layout-aware chunking; rich metadata extraction.
+* **Vector Databases & Indexing:** Choosing storage (`pgvector` in PostgreSQL, Qdrant, Pinecone, Weaviate) and when `pgvector` is enough. HNSW/IVF: know the tradeoffs (speed vs. recall vs. memory), not the internals **(light)**.
+* **Query-Side Retrieval:** Query rewriting, multi-query, and HyDE; agentic RAG, where the model decides when and what to search.
+* **Hybrid Search & Reranking:** Combining dense vector search with sparse keyword search (BM25), followed by a cross-encoder **reranker** (e.g., Cohere Rerank, BGE) to maximize retrieval precision.
+* **Grounded Citations & Refusal:** Enforcing source-chunk citations and instructing models to abstain when retrieved context lacks the answer.
+
+### Pillar 3. AI Agents, Tool Calling & MCP
+* **Function / Tool Calling:** Writing unambiguous tool descriptions and strict parameter schemas for database queries and external APIs.
+* **Model Context Protocol (MCP):** Building and consuming standardized MCP servers to expose tools, databases, and internal resources cleanly.
+* **Stateful Agent Orchestration:** Building controlled agent loops (a custom state machine first; LangGraph is optional) with durable checkpoints, step/cost limits, and **human-in-the-loop** approval gates for high-stakes actions.
+* **Agent Context Management:** Compacting or summarizing long agent histories, sub-agents with their own context, and agent SDKs (Claude Agent SDK, OpenAI Agents SDK).
+
+### Pillar 4. Evaluation (Evals) & Observability *(Highest Hiring Priority)*
+* **Error Analysis:** Reading real traces, sorting failures into categories, and writing evals for the failures that actually happen. This comes before choosing eval tools.
+* **Automated Eval Harnesses:** Creating golden Q&A datasets and running deterministic assertions + LLM-as-a-judge metrics (`Ragas`, `DeepEval`, `pytest`) in CI/CD pipelines to prevent regressions.
+* **Synthetic Eval Data:** Using an LLM to generate test questions and edge cases when there are no real users yet.
+* **RAG-Specific Metrics:** Measuring retrieval quality (Context Precision, Context Recall) separately from generation quality (Faithfulness, Answer Relevance).
+* **Online Evals & Feedback Loops:** Thumbs up/down, user corrections, and A/B tests of prompts and models in production; feeding failures back into the golden dataset.
+* **Tracing & Telemetry:** End-to-end request tracing, prompt versioning, latency breakdowns, and per-user/per-tenant token and dollar cost tracking using **Langfuse** or **OpenTelemetry**.
+
+### Pillar 5. Guardrails, Security & Governance
+* **Prompt Injection & Jailbreak Defense:** Isolating untrusted user inputs and retrieved document text from system instructions.
+* **OWASP Top 10 for LLM Applications:** Insecure output handling (model output rendered as HTML is XSS), excessive agency, data exfiltration through tool calls, and secrets in prompts.
+* **Access Control & PII Protection:** Enforcing user/tenant RBAC permissions *inside* vector database metadata filters (preventing cross-tenant data leaks) and redacting PII before sending data to external LLM APIs.
+* **Compliance Basics (light):** GDPR, data retention, zero-data-retention agreements with providers, and the EU AI Act for European users.
+
+### Pillar 6. Practical Post-Training & Local/Open-Model Serving *(Secondary / Edge)*
+* **Decision Framework:** Knowing when Prompting + RAG solves the problem vs. when Fine-Tuning is actually justified.
+* **Parameter-Efficient Fine-Tuning:** LoRA / QLoRA basics for narrow classification, extraction, or strict formatting tasks.
+* **Open-Weight Serving:** Running models locally via Ollama and understanding production inference engines (vLLM, quantization tradeoffs).
+
+### Pillar 7. AI Product UX
+* **Showing AI Output Well:** Displaying citations and uncertainty, loading and streaming states, streaming partial structured output, and letting users cancel or retry.
+* **Designing for Failure:** Fallback answers, "I don't know" states, and making it easy for users to correct the AI (which also feeds the feedback loop in pillar 4).
+
+## Next prompts to ask
+1. *"Design 2 end-to-end portfolio projects using Python, FastAPI, PostgreSQL/pgvector, and Redis that cover RAG, hybrid search, MCP tools, and automated evals."*
+2. *"Give me a deep-dive checklist on building a CI/CD evaluation suite for a RAG application, starting from error analysis."*

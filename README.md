@@ -1,11 +1,19 @@
 # lms-learning
 
-Learning how LLMs work, from math basics to building a tiny GPT on a book.
+Learning how LLMs work (math basics to a tiny GPT on a book) and how to build production AI features on top of them, aiming at an Applied AI / LLM Engineer role.
 
-- [ROADMAP.md](ROADMAP.md): the course map from LearnHarness and what each node teaches
+- [ROADMAP.md](ROADMAP.md): the 4-month plan, Part A (the LearnHarness map of LLM internals) and Part B (the applied AI engineer track)
+- [PROGRESS.md](PROGRESS.md): every concept, how it's practised (Quiz / Problem / BUILD / project) and its status
+- [CLAUDE.md](CLAUDE.md): context Claude Code loads automatically when opened in this folder
+- `problems/`, `builds/`, `projects/`: practice code (small problems, Part A BUILDs, Part B projects); `data/`: shared inputs
 - `notes/`: LearnHarness exports (`notes/LLMs.md` is the main session). Never edit these by hand.
 - `scripts/`: the auto-sync job
 - [SETUP-OTHER-LAPTOP.md](SETUP-OTHER-LAPTOP.md): instructions to give Claude on another laptop
+
+## How learning works
+LearnHarness teaches a concept. Then open Claude Code in `~/lms-learning` and say "let's practise what I just learned": it reads `PROGRESS.md` and the latest export, and gives you the problem, BUILD step or project step for it. Concepts marked *Quiz* in `PROGRESS.md` have nothing to build.
+
+Practice code is **not** synced automatically (only `notes/` is). Ask Claude Code to commit and push at the end of a practice session.
 
 ## How syncing works
 Export from LearnHarness into **Desktop → lms-learning → notes**, overwriting `LLMs.md`. A background job then:

@@ -20,7 +20,7 @@ Background: I'm a backend developer learning how LLMs work, using an app called 
    - ~/Library/Logs/lms-learning-autopush.log has no errors
    If the exit code isn't 0, read the log and tell me what went wrong.
 
-5. Read README.md, ROADMAP.md and the newest file in notes/, then tell me in a few lines where I am in the course (last lesson taught, any question pending) and give me the "resume" prompt from README.md to paste into LearnHarness.
+5. Read README.md, ROADMAP.md, PROGRESS.md and the newest file in notes/, then tell me in a few lines where I am in the course (last lesson taught, any question pending, next practice item) and give me the prompt from RESUME-PROMPT.txt to paste into LearnHarness.
 
 Rules for this repo:
 - Never edit, rename or delete anything in notes/. Those files are exact LearnHarness exports; the sync depends on them being untouched.
