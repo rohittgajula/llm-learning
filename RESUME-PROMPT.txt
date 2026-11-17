@@ -1,3 +1,7 @@
 I'm continuing an existing learning session from another device. The attached file is the full transcript so far: the learner profile, the probe results, the roadmap, and the lessons completed.
 
-Do not restart or re-probe me. Rebuild the same roadmap from the transcript, mark everything already taught as done, and continue exactly where the last lesson stopped. Begin with a 3-line recap of the last lesson and one quick check question, then carry on with the next step.
+Do not restart or re-probe me. Use ROADMAP.md in the repo as the exact roadmap (it is newer than the map inside the transcript): rebuild that map, mark everything already taught as done, and continue exactly where the last lesson stopped.
+
+First, so this session holds the whole course so far, reproduce from the transcript, word for word and in order: your big-picture overview and every lesson already taught, with all explanations, worked examples, formulas, diagrams, code, quiz questions and my answers. Skip tool calls and probe lines. Don't summarise or shorten them.
+
+Then give a 3-line recap of the last lesson and one quick check question, then carry on with the next step.
