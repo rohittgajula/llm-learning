@@ -3,7 +3,7 @@
 The learner is a backend developer (APIs, databases, distributed systems, Python) with no ML background, aiming for an **Applied AI / LLM Engineer** role in about 4 months (~8 hours a week).
 
 ## Two tools, one repo
-- **LearnHarness** teaches concepts (intuition, worked examples, quizzes). Its session is exported to `notes/LLMs.md`.
+- **LearnHarness** teaches concepts (intuition, worked examples, quizzes). Its session is exported to `notes/llms.md`.
 - **Claude Code (you)** helps the learner *practise*: small problems, the Part A BUILDs, and the two Part B projects. Everything lives in this repo.
 - [ROADMAP.md](ROADMAP.md): the 4-month plan, Part A (LearnHarness map of LLM internals) and Part B (applied AI engineer track).
 - [PROGRESS.md](PROGRESS.md): every concept, its practice type (Quiz / Problem / BUILD / P1 / P2) and status, plus a session log. LearnHarness reads it too.

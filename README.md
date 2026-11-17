@@ -6,7 +6,7 @@ Learning how LLMs work (math basics to a tiny GPT on a book) and how to build pr
 - [PROGRESS.md](PROGRESS.md): every concept, how it's practised (Quiz / Problem / BUILD / project) and its status
 - [CLAUDE.md](CLAUDE.md): context Claude Code loads automatically when opened in this folder
 - `problems/`, `builds/`, `projects/`: practice code (small problems, Part A BUILDs, Part B projects); `data/`: shared inputs
-- `notes/`: LearnHarness exports (`notes/LLMs.md` is the main session). Never edit these by hand.
+- `notes/`: LearnHarness exports (`notes/llms.md` is the main session). Never edit these by hand.
 - `scripts/`: the auto-sync job
 - [SETUP-OTHER-LAPTOP.md](SETUP-OTHER-LAPTOP.md): instructions to give Claude on another laptop
 
@@ -41,8 +41,9 @@ LearnHarness lesson ──► export to notes/ ──► Claude Code practice �
 
 ## Exporting from LearnHarness
 1. Use LearnHarness's export for the LLMs session.
-2. Save it into **Desktop → llm-learning → notes** with the name `LLMs.md`.
-3. If asked, choose **Replace**. Don't keep both: a second file like `LLMs (1).md` is not an overwrite.
+2. Save it into **Desktop → llm-learning → notes** with the name `llms.md` (LearnHarness's default name; `LLMs.md` is the same file to macOS).
+3. If asked, choose **Replace**. Don't keep both: a second file like `llms (1).md` is not an overwrite.
+   - Saved it in the `llm-learning` folder itself by mistake? The sync job moves `llms.md` into `notes/` for you, as long as it's newer than the copy in `notes/`.
 4. Wait for the **"Notes saved to GitHub"** notification (a few seconds; up to 5 minutes if you were offline).
 5. Not sure it synced? Check:
    ```bash
@@ -64,25 +65,25 @@ LearnHarness lesson ──► export to notes/ ──► Claude Code practice �
    ```bash
    pbcopy < ~/llm-learning/RESUME-PROMPT.txt
    ```
-3. In LearnHarness, start a session, **attach `notes/LLMs.md`** and paste the prompt. Always attach the file; without it LearnHarness has nothing to resume from.
+3. In LearnHarness, start a session, **attach `notes/llms.md`** and paste the prompt. Always attach the file; without it LearnHarness has nothing to resume from.
 4. Check its first reply: a word-for-word replay of earlier lessons, a 3-line recap and a check question, with the map from `ROADMAP.md`. If it summarised instead, reply `you summarised, reproduce it word for word`.
 5. For practice, open Claude Code in `~/llm-learning` there and say `Where am I and what's next?`
 
 New laptop with no repo yet: follow [SETUP-OTHER-LAPTOP.md](SETUP-OTHER-LAPTOP.md).
 
 ## How syncing works
-Export from LearnHarness into **Desktop → llm-learning → notes**, overwriting `LLMs.md`. A background job then:
+Export from LearnHarness into **Desktop → llm-learning → notes**, overwriting `llms.md`. A background job then:
 
 1. Waits until the export has finished writing (no change for 3 seconds).
 2. Commits it **before** pulling anything, so nothing on this laptop can be overwritten.
 3. Pulls the other laptop's exports.
 4. Pushes, and shows a "Notes saved to GitHub" notification.
 
-It runs whenever `notes/` changes, every 5 minutes, and at login, so it also keeps this laptop up to date.
+It runs whenever `notes/` or the repo folder changes, every 5 minutes, and at login, so it also keeps this laptop up to date.
 
 - **Offline:** the export is committed locally and pushed on the next run once you're back online.
-- **Both laptops changed `LLMs.md`:** the GitHub version stays as `LLMs.md` and this laptop's version is saved beside it as `LLMs.conflict-<laptop>-<time>.md`, with a notification. Nothing is lost; you pick which to keep.
-- **Export saved as `LLMs (1).md`:** that's a second file, not an overwrite. It still syncs, but delete the old one or rename so there's one main file.
+- **Both laptops changed `llms.md`:** the GitHub version stays as `llms.md` and this laptop's version is saved beside it as `llms.conflict-<laptop>-<time>.md`, with a notification. Nothing is lost; you pick which to keep.
+- **Export saved as `llms (1).md`:** that's a second file, not an overwrite. It still syncs, but delete the old one or rename so there's one main file.
 - **Log:** `~/Library/Logs/llm-learning-autopush.log`
 
 The real folder is `~/llm-learning`; the Desktop item is a shortcut to it (macOS blocks background jobs from reading Desktop directly).

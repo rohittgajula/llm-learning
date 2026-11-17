@@ -1,5 +1,5 @@
 #!/bin/bash
-# Installs a launchd agent that runs auto-push.sh whenever notes/ changes, every 5 minutes, and at login.
+# Installs a launchd agent that runs auto-push.sh whenever notes/ (or the repo folder) changes, every 5 minutes, and at login.
 # Run once on each laptop after cloning the repo to ~/llm-learning.
 # Also removes the old lms-learning job and Desktop shortcut from before the rename.
 # The real folder lives outside Desktop because macOS blocks background jobs from reading Desktop.
@@ -32,7 +32,7 @@ cat >"$PLIST" <<EOF
     <string>$REPO/scripts/auto-push.sh</string>
   </array>
   <key>WatchPaths</key>
-  <array><string>$REPO/notes</string></array>
+  <array><string>$REPO/notes</string><string>$REPO</string></array>
   <key>StartInterval</key><integer>300</integer>
   <key>RunAtLoad</key><true/>
   <key>EnvironmentVariables</key>

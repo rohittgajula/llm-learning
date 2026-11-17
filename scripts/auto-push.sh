@@ -17,7 +17,7 @@ notify() { [ -n "$LLM_QUIET" ] || osascript -e "display notification \"$1\" with
 laptop=$(scutil --get LocalHostName 2>/dev/null || hostname -s)
 
 # Wait until the export has stopped changing: same sizes and times 3 seconds apart (up to 60s).
-snapshot() { find notes -type f -exec stat -f '%N %z %m' {} + 2>/dev/null | sort; }
+snapshot() { find notes . -maxdepth 1 -type f \( -path 'notes/*' -o -iname 'llms.md' \) -exec stat -f '%N %z %m' {} + 2>/dev/null | sort; }
 prev=$(snapshot)
 for _ in $(seq 1 20); do
   sleep "${LLM_SETTLE:-3}"
@@ -25,6 +25,19 @@ for _ in $(seq 1 20); do
   [ "$cur" = "$prev" ] && break
   prev=$cur
 done
+
+# 0. An export saved in the repo folder instead of notes/ gets moved in. LearnHarness names it
+#    llms.md; macOS ignores case, so LLMs.md matches too. An older copy is left alone and reported.
+stray=$(find . -maxdepth 1 -type f -iname 'llms.md' | head -1)
+if [ -n "$stray" ] && ! git ls-files --error-unmatch "$stray" >/dev/null 2>&1; then
+  if [ ! -e notes/llms.md ] || ! [ notes/llms.md -nt "$stray" ]; then
+    mv -f "$stray" notes/llms.md
+    log "moved ${stray#./} into notes/llms.md (the export was saved outside notes/)"
+  else
+    log "left ${stray#./} in the repo folder: it is older than notes/llms.md"
+    notify "An older llms.md is in the repo folder, not in notes. Check it."
+  fi
+fi
 
 # 1. Commit local exports first, so a pull can never overwrite them.
 if [ -n "$(git status --porcelain -- notes)" ]; then
