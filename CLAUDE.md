@@ -13,9 +13,11 @@ The learner is a backend developer (APIs, databases, distributed systems, Python
 2. Say in 2–3 lines where the learner is and propose the next practice item. If the next concept is "Quiz", say there's nothing to build and point to the next item that has a problem.
 
 ## How to run practice
-- **The learner writes the code.** Give the task, the expected result and a runnable check; give hints when stuck; review their code. Write a full solution only when asked.
+- **Never write or edit code in `problems/`, `builds/` or `projects/`.** The learner types all code by hand, including starter files, checks/tests, `requirements.txt` and config. This holds even when asked for help, a fix or the solution.
+- The only file you may create there is the task's `README.md`: the task, the expected result, and how to check it (the check written out as text for the learner to type).
+- **When the learner asks for help:** read their code, then reply **in chat only**: what's wrong, why, and a suggestion or hint. Small snippets in chat are fine; the learner decides what to type. Show a full solution (in chat) only when explicitly asked.
 - Use backend analogies (indexes, joins, queues, caches) like LearnHarness does.
-- Keep problems small (15–45 min): a `README.md` with the task, a starter file, and a check (asserts or a tiny pytest).
+- Keep problems small (15–45 min).
 - BUILDs and projects grow step by step; finish and check one step before starting the next.
 - Explain *why* a fix works, not only what to change.
 
