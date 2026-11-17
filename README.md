@@ -11,10 +11,12 @@ Export from LearnHarness into `notes/` (overwrite `LLMs.md`). Within a few secon
 
 ## Setting up the other laptop
 ```bash
-git clone https://github.com/rohittgajula/lms-learning.git ~/Desktop/lms-learning
-bash ~/Desktop/lms-learning/scripts/install-autopush.sh
+git clone https://github.com/rohittgajula/lms-learning.git ~/lms-learning
+bash ~/lms-learning/scripts/install-autopush.sh
 ```
-Before studying there, run `git -C ~/Desktop/lms-learning pull` to get the latest export.
+The real folder is `~/lms-learning`; the installer puts a shortcut to it on the Desktop (macOS blocks background jobs from reading Desktop directly).
+
+Before studying there, run `git -C ~/lms-learning pull` to get the latest export.
 
 ## Resuming in LearnHarness on another laptop
 Attach `notes/LLMs.md` and send:
