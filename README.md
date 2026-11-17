@@ -27,10 +27,4 @@ The real folder is `~/lms-learning`; the Desktop item is a shortcut to it (macOS
 ## Switching laptops
 1. On the laptop you're leaving, export from LearnHarness and wait for the "Notes saved to GitHub" notification.
 2. On the other laptop the job pulls within 5 minutes. To get it right away: `git -C ~/lms-learning pull`
-3. In LearnHarness there, attach `notes/LLMs.md` and send:
-
-```text
-I'm continuing an existing learning session from another device. The attached file is the full transcript so far: the learner profile, the probe results, the roadmap, and the lessons completed.
-
-Do not restart or re-probe me. Rebuild the same roadmap from the transcript, mark everything already taught as done, and continue exactly where the last lesson stopped. Begin with a 3-line recap of the last lesson and one quick check question, then carry on with the next step.
-```
+3. In LearnHarness there, attach `notes/LLMs.md` and send the prompt in [RESUME-PROMPT.txt](RESUME-PROMPT.txt). To copy it: `pbcopy < ~/lms-learning/RESUME-PROMPT.txt`
