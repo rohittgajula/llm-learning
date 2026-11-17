@@ -3,9 +3,9 @@
 # Never throws away an export: local changes are committed before anything is pulled, a failed
 # push is retried on the next run, and if both laptops changed the same file the local copy is
 # kept next to it as <name>.conflict-<laptop>-<time>.md with a notification.
-REPO="${LMS_REPO:-$HOME/lms-learning}"
-LOG="${LMS_LOG:-$HOME/Library/Logs/lms-learning-autopush.log}"
-LOCK="${TMPDIR:-/tmp}/lms-learning-autopush.$(echo "$REPO" | md5).lock"
+REPO="${LLM_REPO:-$(cd "$(dirname "$0")/.." && pwd)}"   # the repo this script lives in
+LOG="${LLM_LOG:-$HOME/Library/Logs/llm-learning-autopush.log}"
+LOCK="${TMPDIR:-/tmp}/llm-learning-autopush.$(echo "$REPO" | md5).lock"
 
 exec >>"$LOG" 2>&1
 cd "$REPO" || exit 1
@@ -13,14 +13,14 @@ mkdir "$LOCK" 2>/dev/null || exit 0
 trap 'rmdir "$LOCK"' EXIT
 
 log() { echo "$(date '+%Y-%m-%d %H:%M:%S') $*"; }
-notify() { [ -n "$LMS_QUIET" ] || osascript -e "display notification \"$1\" with title \"lms-learning\"" >/dev/null 2>&1; }
+notify() { [ -n "$LLM_QUIET" ] || osascript -e "display notification \"$1\" with title \"llm-learning\"" >/dev/null 2>&1; }
 laptop=$(scutil --get LocalHostName 2>/dev/null || hostname -s)
 
 # Wait until the export has stopped changing: same sizes and times 3 seconds apart (up to 60s).
 snapshot() { find notes -type f -exec stat -f '%N %z %m' {} + 2>/dev/null | sort; }
 prev=$(snapshot)
 for _ in $(seq 1 20); do
-  sleep "${LMS_SETTLE:-3}"
+  sleep "${LLM_SETTLE:-3}"
   cur=$(snapshot)
   [ "$cur" = "$prev" ] && break
   prev=$cur

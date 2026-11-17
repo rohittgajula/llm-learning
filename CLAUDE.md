@@ -1,6 +1,6 @@
-# lms-learning: context for Claude Code
+# llm-learning: context for Claude Code
 
-The learner is a backend developer (APIs, databases, distributed systems, Python) with no ML background, aiming for an **Applied AI / LLM Engineer** role in about 4 months (~8 hours a week). Despite the repo name, this is about **LLMs**.
+The learner is a backend developer (APIs, databases, distributed systems, Python) with no ML background, aiming for an **Applied AI / LLM Engineer** role in about 4 months (~8 hours a week).
 
 ## Two tools, one repo
 - **LearnHarness** teaches concepts (intuition, worked examples, quizzes). Its session is exported to `notes/LLMs.md`.

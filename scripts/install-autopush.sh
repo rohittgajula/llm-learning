@@ -1,14 +1,23 @@
 #!/bin/bash
 # Installs a launchd agent that runs auto-push.sh whenever notes/ changes, every 5 minutes, and at login.
-# Run once on each laptop after cloning the repo to ~/lms-learning.
+# Run once on each laptop after cloning the repo to ~/llm-learning.
+# Also removes the old lms-learning job and Desktop shortcut from before the rename.
 # The real folder lives outside Desktop because macOS blocks background jobs from reading Desktop.
 set -e
-REPO="$HOME/lms-learning"
-LABEL="com.rohit.lms-learning.autopush"
+REPO="$HOME/llm-learning"
+LABEL="com.rohit.llm-learning.autopush"
+OLD_LABEL="com.rohit.lms-learning.autopush"
+
+[ -d "$REPO/.git" ] || { echo "No repo at $REPO. Clone or move it there first."; exit 1; }
+
+# Remove the pre-rename job and shortcut, if present.
+launchctl bootout "gui/$(id -u)/$OLD_LABEL" 2>/dev/null || true
+rm -f "$HOME/Library/LaunchAgents/$OLD_LABEL.plist"
+[ -L "$HOME/Desktop/lms-learning" ] && rm "$HOME/Desktop/lms-learning"
 PLIST="$HOME/Library/LaunchAgents/$LABEL.plist"
 
 chmod +x "$REPO/scripts/auto-push.sh"
-[ -e "$HOME/Desktop/lms-learning" ] || ln -s "$REPO" "$HOME/Desktop/lms-learning"
+[ -e "$HOME/Desktop/llm-learning" ] || ln -s "$REPO" "$HOME/Desktop/llm-learning"
 mkdir -p "$HOME/Library/LaunchAgents" "$HOME/Library/Logs"
 
 cat >"$PLIST" <<EOF
@@ -39,4 +48,4 @@ for _ in $(seq 1 20); do
   sleep 0.5
 done
 launchctl bootstrap "gui/$(id -u)" "$PLIST"
-echo "Installed. Log: $HOME/Library/Logs/lms-learning-autopush.log"
+echo "Installed. Log: $HOME/Library/Logs/llm-learning-autopush.log"
