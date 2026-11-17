@@ -1,5 +1,5 @@
 #!/bin/bash
-# Installs a launchd agent that runs auto-push.sh whenever notes/ changes.
+# Installs a launchd agent that runs auto-push.sh whenever notes/ changes, every 5 minutes, and at login.
 # Run once on each laptop after cloning the repo to ~/lms-learning.
 # The real folder lives outside Desktop because macOS blocks background jobs from reading Desktop.
 set -e
@@ -24,6 +24,8 @@ cat >"$PLIST" <<EOF
   </array>
   <key>WatchPaths</key>
   <array><string>$REPO/notes</string></array>
+  <key>StartInterval</key><integer>300</integer>
+  <key>RunAtLoad</key><true/>
   <key>EnvironmentVariables</key>
   <dict><key>PATH</key><string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string></dict>
 </dict>

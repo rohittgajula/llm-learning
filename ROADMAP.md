@@ -1,193 +1,207 @@
-# LLM Learning Roadmap
+# LLM-from-scratch roadmap
 
-Goal: understand how LLMs work from the ground up, then **build and train a tiny GPT on a book** in PyTorch on a Mac.
+The LearnHarness map for this course, copied as-is from the LLMs session. Goal: build a tiny GPT on a book in PyTorch on a Mac.
 
-Based on the LearnHarness plan (see `notes/LLMs.md`). Nodes marked **(+)** are additions suggested on top of it; nodes marked **[build]** are hands-on checkpoints.
-
-## Map
+This is the map as of 2026-11-17, after adding the extra math nodes, the BUILD checkpoints, and marking post-build topics as brief. If LearnHarness changes it again, the latest version is in the newest export in `notes/`.
 
 ```mermaid
-flowchart BT
-    %% ---------- Roots ----------
-    R1["Slope = rise / run"]
-    R2["Vectors = arrays of numbers"]
-    R3["Probabilities sum to 1"]
-    R4["Model = function with tunable knobs"]
+graph TD
+  rise-over-run[Slope = rise/run]
+  arrays-as-vectors[Vectors = ordered lists of numbers]
+  probability-basics[Probabilities sum to 1]
+  model-params[Model = function with tunable params]
+  log-exp[exp and log: properties]
 
-    %% ---------- Math chains ----------
-    R2 --> M1["Dot product"]
-    M1 --> M2["Matrices"]
-    M2 --> M3["Matrix multiplication"]
-    M3 --> M4["(+) Tensor shapes and broadcasting"]
+  rise-over-run --> derivatives[Derivative = slope at a point]
+  derivatives --> chain-rule[Chain rule]
+  derivatives --> partial-derivatives[Partial derivatives]
+  partial-derivatives --> gradients[Gradient = vector of partials]
 
-    R1 --> D1["Derivative"]
-    D1 --> D2["(+) Chain rule"]
-    D1 --> D3["(+) Partial derivatives"]
-    D3 --> D4["Gradient"]
+  arrays-as-vectors --> dot-product[Dot product]
+  arrays-as-vectors --> matrices[Matrices = tables of vectors]
+  arrays-as-vectors --> mean-variance[Mean and variance]
+  dot-product --> matmul[Matrix multiplication]
+  matrices --> matmul
+  matmul --> tensor-shapes-broadcasting[Tensor shapes and broadcasting]
 
-    R3 --> P0["(+) exp and log"]
-    P0 --> P1["Softmax"]
-    R3 --> P2["(+) Mean and variance"]
+  probability-basics --> softmax[Softmax]
+  log-exp --> softmax
 
-    %% ---------- ML basics ----------
-    R4 --> L1["Training vs inference"]
-    P0 --> L2["Loss: cross-entropy"]
-    P1 --> L2
-    L1 --> L2
-    D4 --> L3["Gradient descent"]
-    L2 --> L3
-    L3 --> B1["[build] Fit a line with NumPy"]
-    L3 --> L4["Optimizers: SGD, Adam"]
-    D2 --> L5["Backpropagation"]
-    L3 --> L5
-    L5 --> B2["[build] micrograd autograd engine"]
-    L3 --> L6["Overfitting, train/val split,<br/>learning rate, batch size, epochs"]
+  model-params --> train-vs-inference[Training vs inference]
+  train-vs-inference --> loss-functions[Loss / cross-entropy]
+  softmax --> loss-functions
+  log-exp --> loss-functions
+  loss-functions --> gradient-descent[Gradient descent]
+  gradients --> gradient-descent
+  gradient-descent --> gd-numpy-line-fit["BUILD: fit a line via gradient descent (NumPy)"]
+  dot-product --> gd-numpy-line-fit
+  gradient-descent --> backprop[Backpropagation]
+  chain-rule --> backprop
+  backprop --> micrograd-engine["BUILD: tiny autograd engine (micrograd-style)"]
+  gd-numpy-line-fit --> micrograd-engine
+  gradient-descent --> optimizers[Optimizers: SGD, Adam]
+  loss-functions --> overfitting-split[Overfitting / train-val split]
+  gradient-descent --> hyperparams[LR, batch size, epochs]
 
-    %% ---------- Neural networks ----------
-    M3 --> N1["Neuron = dot product + nonlinearity"]
-    N1 --> N2["Activations: ReLU, GELU"]
-    N2 --> N3["Layers, forward and backward pass"]
-    L5 --> N3
-    N3 --> N4["MLP"]
+  micrograd-engine --> pytorch-tensors-autograd[PyTorch tensors + autograd]
+  tensor-shapes-broadcasting --> pytorch-tensors-autograd
 
-    %% ---------- Text ----------
-    N4 --> T1["Tokenization: char vs BPE"]
-    T1 --> T2["Vocabulary and token IDs"]
-    T2 --> T3["Embeddings = lookup table"]
-    T3 --> T4["Positional embeddings"]
-    T3 --> T5["Next-token prediction"]
-    L2 --> T5
-    T5 --> B3["[build] Bigram model on the book"]
+  dot-product --> neuron[Neuron]
+  model-params --> neuron
+  neuron --> layers-matmul[Layer = matmul + bias]
+  matmul --> layers-matmul
+  layers-matmul --> activations[Activations: ReLU, GELU]
+  activations --> mlp[MLP: forward + backward]
+  pytorch-tensors-autograd --> mlp
+  optimizers --> nn-module-training-loop[nn.Module + training loop]
+  mlp --> nn-module-training-loop
 
-    %% ---------- Transformer ----------
-    T5 --> A1["Self-attention: Q, K, V"]
-    M1 --> A1
-    P1 --> A1
-    A1 --> A2["Causal masking"]
-    A2 --> A3["Multi-head attention"]
-    A3 --> A4["Feed-forward layer"]
-    A4 --> A5["Residuals + LayerNorm"]
-    P2 --> A5
-    A5 --> A6["Transformer block, stacked N times"]
-    T4 --> A6
-    A6 --> A7["Context window"]
+  mlp --> tokenization[Tokenization: char vs BPE]
+  tokenization --> vocab-token-ids[Vocabulary / token IDs]
+  vocab-token-ids --> embeddings[Embeddings = lookup table]
+  matrices --> embeddings
+  embeddings --> positional-embeddings[Positional embeddings]
+  positional-embeddings --> next-token-prediction[Next-token prediction task]
+  loss-functions --> next-token-prediction
+  next-token-prediction --> bigram-char-model["BUILD: char-level bigram model on your book"]
+  nn-module-training-loop --> bigram-char-model
 
-    %% ---------- Generation ----------
-    A6 --> G1["Logits -> softmax -> sampling"]
-    G1 --> G2["Temperature, top-k, top-p"]
-    G2 --> G3["Autoregressive generation"]
+  bigram-char-model --> self-attention[Self-attention: Q, K, V]
+  dot-product --> self-attention
+  softmax --> self-attention
+  self-attention --> causal-masking[Causal masking]
+  causal-masking --> multi-head-attention[Multi-head attention]
+  multi-head-attention --> feed-forward-block[Feed-forward layer]
+  mlp --> feed-forward-block
+  feed-forward-block --> residual-connections[Residual connections]
+  residual-connections --> layer-norm[Layer normalization]
+  mean-variance --> layer-norm
+  layer-norm --> stacking-blocks[Stacking blocks]
+  stacking-blocks --> context-window[Context window]
 
-    %% ---------- Tools ----------
-    M4 --> TL1["PyTorch: tensors, autograd,<br/>nn.Module, training loop, MPS"]
-    B2 --> TL1
+  context-window --> logits[Logits]
+  softmax --> sampling-strategies[Sampling: temperature, top-k/p]
+  logits --> sampling-strategies
+  sampling-strategies --> autoregressive-generation[Autoregressive generation loop]
 
-    %% ---------- Goal ----------
-    G3 --> GOAL(["[build] Tiny GPT on a book"])
-    TL1 --> GOAL
-    B3 --> GOAL
+  autoregressive-generation --> build-tiny-gpt["BUILD: tiny GPT trained on your book"]
+  nn-module-training-loop --> build-tiny-gpt
+  bigram-char-model --> build-tiny-gpt
 
-    %% ---------- After the build ----------
-    GOAL --> X1["Pretraining, fine-tuning, SFT, RLHF"]
-    GOAL --> X2["Scaling laws, hallucination"]
-    GOAL --> X3["Embeddings + vector DB -> RAG"]
-    GOAL --> X4["Quantization, Ollama, KV cache"]
+  build-tiny-gpt --> pretraining[Pretraining -- brief]
+  pretraining --> finetuning-sft[Fine-tuning / SFT -- brief]
+  finetuning-sft --> rlhf[RLHF -- brief]
+  pretraining --> scaling-laws[Scaling laws -- brief]
+  pretraining --> hallucination[Hallucination -- brief]
+  build-tiny-gpt --> quantization[Quantization -- brief]
+  quantization --> ollama-local[Running locally: Ollama -- brief]
+  build-tiny-gpt --> kv-cache[KV cache -- brief]
 
-    classDef root fill:#e8f0fe,stroke:#4a6fa5
-    classDef build fill:#fff4e0,stroke:#d08a00
-    classDef added stroke-dasharray: 4 3
-    classDef goal fill:#e3f6e8,stroke:#2e8b57,stroke-width:2px
-    class R1,R2,R3,R4 root
-    class B1,B2,B3 build
-    class M4,D2,D3,P0,P2 added
-    class GOAL goal
+  tokenization --> hf-tooling[HF transformers/datasets/tiktoken]
+  nn-module-training-loop --> hf-tooling
+
+  build-tiny-gpt --> prompting[Prompting / system prompts]
+  embeddings --> embeddings-vector-db[Embeddings + vector DB]
+  build-tiny-gpt --> embeddings-vector-db
+  embeddings-vector-db --> rag[RAG -- full depth]
+  prompting --> rag
+  hf-tooling --> rag
 ```
 
-## What each part teaches
+## What each node teaches
 
 ### Roots
-| Node | What it teaches | Why it matters for the GPT |
-|---|---|---|
-| Slope = rise / run | How fast output changes per unit of input | Training asks "if I nudge this knob, how fast does the error change?" |
-| Vectors | A list of numbers that represents something | Every token becomes a vector |
-| Probabilities sum to 1 | What a probability distribution is | The model outputs a distribution over the next token |
-| Model = function with knobs | Parameters are just numbers you tune | A GPT is a function with millions of knobs |
-
-### Math chains
-| Node | What it teaches | Why it matters |
-|---|---|---|
-| Dot product | Multiply element-wise, then sum; measures similarity | Attention scores are dot products |
-| Matrices / matmul | Many dot products at once | Every layer is a matrix multiplication |
-| (+) Tensor shapes, broadcasting | How (batch, seq, dim) arrays combine | Where most PyTorch bugs happen |
-| Derivative | Slope of a curve at one point | Tells which direction reduces the error |
-| (+) Chain rule | Derivative of a function inside a function | Backpropagation *is* the chain rule |
-| (+) Partial derivatives | Slope for one knob while holding others fixed | Each parameter gets its own slope |
-| Gradient | All the partial derivatives together | The direction to update every knob |
-| (+) exp and log | Exponentials and logarithms | Softmax uses exp; cross-entropy uses log |
-| Softmax | Turns any numbers into probabilities | Turns model scores into next-token odds |
-| (+) Mean and variance | Average and spread of numbers | LayerNorm uses them |
-
-### Machine learning basics
 | Node | What it teaches |
 |---|---|
-| Training vs inference | Learning the knobs vs using them |
-| Cross-entropy loss | A single number for "how wrong was the prediction" |
-| Gradient descent | Step the knobs a little against the gradient, repeat |
-| **[build] Fit a line with NumPy** | ~20 lines: gradient descent end to end |
-| SGD, Adam | Smarter ways to take those steps |
-| Backpropagation | Computing gradients for every knob efficiently |
-| **[build] micrograd** | Write a tiny autograd engine yourself |
-| Overfitting, train/val, LR, batch, epochs | The practical dials of training |
+| Slope = rise/run | How fast output changes per unit of input |
+| Vectors = ordered lists of numbers | Representing a thing (later, a token) as an array of numbers |
+| Probabilities sum to 1 | What a probability distribution is |
+| Model = function with tunable params | A model is a function whose numbers (parameters) get adjusted |
+| exp and log: properties | Exponentials and logarithms; softmax uses exp, cross-entropy uses log |
 
-### Neural networks
+### Math
 | Node | What it teaches |
 |---|---|
-| Neuron | Dot product + bias + nonlinearity |
-| ReLU, GELU | Why nonlinearity lets networks learn curves |
-| Layers, forward/backward | Data flows forward, gradients flow back |
-| MLP | Stacked layers; the "feed-forward" part of a transformer |
+| Derivative = slope at a point | Slope of a curve at one spot: "nudge the input, how does output move?" |
+| Chain rule | Derivative of a function inside a function; backprop is built on it |
+| Partial derivatives | Slope for one parameter while holding the others fixed |
+| Gradient = vector of partials | All the partial derivatives together: which way to adjust every parameter |
+| Dot product | Multiply element-wise and sum; a measure of similarity |
+| Matrices = tables of vectors | Many vectors stored together |
+| Mean and variance | Average and spread of numbers; layer normalization uses them |
+| Matrix multiplication | Many dot products at once; the core operation of every layer |
+| Tensor shapes and broadcasting | How (batch, sequence, dimension) arrays combine; where most PyTorch bugs come from |
+| Softmax | Turns any list of scores into probabilities |
 
-### Working with text
+### Training
 | Node | What it teaches |
 |---|---|
-| Tokenization | Splitting text into characters or sub-word pieces (BPE) |
-| Vocabulary, token IDs | Each token gets an integer ID |
-| Embeddings | A lookup table: ID → vector (like a DB index → row) |
-| Positional embeddings | Telling the model *where* each token is |
-| Next-token prediction | The one task GPT is trained on |
-| **[build] Bigram model** | Predict the next character of your book from the current one |
+| Training vs inference | Learning the parameters vs using them |
+| Loss / cross-entropy | One number for "how wrong was the prediction" |
+| Gradient descent | Step every parameter a little against its gradient, repeat |
+| **BUILD: fit a line via gradient descent (NumPy)** | Gradient descent end to end in a few lines of NumPy |
+| Backpropagation | Computing all the gradients efficiently, layer by layer |
+| **BUILD: tiny autograd engine (micrograd-style)** | Writing the thing that computes gradients automatically |
+| Optimizers: SGD, Adam | Smarter ways to take those steps |
+| Overfitting / train-val split | Memorizing vs generalizing, and how to detect it |
+| LR, batch size, epochs | The main dials of a training run |
 
-### The Transformer
+### Neural networks and PyTorch
 | Node | What it teaches |
 |---|---|
-| Self-attention (Q, K, V) | Each token does a soft, weighted lookup over other tokens |
-| Causal masking | A token can't look at future tokens |
-| Multi-head attention | Several lookups in parallel, each learning different patterns |
-| Feed-forward layer | Per-token MLP after attention |
-| Residuals + LayerNorm | What keeps deep stacks trainable |
-| Transformer block × N | The repeating unit of a GPT |
-| Context window | How many tokens the model can see at once |
+| PyTorch tensors + autograd | Arrays on the GPU that compute their own gradients (your micrograd, industrial strength) |
+| Neuron | Dot product of inputs and weights, plus bias |
+| Layer = matmul + bias | A whole layer of neurons as one matrix multiplication |
+| Activations: ReLU, GELU | The nonlinearity that lets networks learn more than straight lines |
+| MLP: forward + backward | Stacked layers: data flows forward, gradients flow back |
+| nn.Module + training loop | Structuring a model and the code that trains it |
+
+### Text
+| Node | What it teaches |
+|---|---|
+| Tokenization: char vs BPE | Splitting text into characters or sub-word pieces |
+| Vocabulary / token IDs | Each token gets an integer ID |
+| Embeddings = lookup table | Token ID → vector, like an index lookup |
+| Positional embeddings | Telling the model where each token sits |
+| Next-token prediction task | The single task a GPT is trained on |
+| **BUILD: char-level bigram model on your book** | The simplest language model: guess the next character from the current one |
+
+### Transformer
+| Node | What it teaches |
+|---|---|
+| Self-attention: Q, K, V | Each token does a soft, weighted lookup over the other tokens |
+| Causal masking | A token can't see tokens after it |
+| Multi-head attention | Several attention lookups in parallel |
+| Feed-forward layer | A per-token MLP after attention |
+| Residual connections | Adding the input back so deep stacks still train |
+| Layer normalization | Keeping numbers in a stable range between layers |
+| Stacking blocks | Repeating the transformer block N times |
+| Context window | How many tokens the model sees at once |
 
 ### Generation
 | Node | What it teaches |
 |---|---|
-| Logits → softmax → sampling | Picking the next token from the model's output |
-| Temperature, top-k, top-p | Controlling how random or focused the output is |
-| Autoregressive generation | Generate one token, append it, repeat |
-
-### Tools
-| Node | What it teaches |
-|---|---|
-| Python + NumPy | Arrays and the math by hand |
-| PyTorch | Tensors, autograd, `nn.Module`, training loop, MPS (Mac GPU) |
-| Hugging Face, tiktoken | Ready-made tokenizers, datasets, pretrained models |
+| Logits | The raw scores the model outputs for every possible next token |
+| Sampling: temperature, top-k/p | Choosing the next token, and controlling randomness |
+| Autoregressive generation loop | Generate a token, append it, repeat |
 
 ### Goal
-**[build] Tiny GPT on a book**: a ~10M-parameter character- or BPE-level transformer, trained on a Project Gutenberg book on the Mac GPU, generating text in the book's style.
-
-### After the build (lighter, read later)
 | Node | What it teaches |
 |---|---|
-| Pretraining, fine-tuning, SFT, RLHF | How ChatGPT-style models are made to answer questions |
-| Scaling laws, hallucination | Why bigger works, and why models make things up |
-| Embeddings + vector DB → RAG | How to actually ask questions about the book |
-| Quantization, Ollama, KV cache | Running real models locally and fast |
+| **BUILD: tiny GPT trained on your book** | Putting it all together: a small transformer trained on a book, generating text in its style |
+
+### After the build
+| Node | What it teaches |
+|---|---|
+| Pretraining (brief) | Training on huge amounts of text |
+| Fine-tuning / SFT (brief) | Further training on examples of the behaviour you want |
+| RLHF (brief) | Tuning with human preference feedback |
+| Scaling laws (brief) | Why bigger models with more data keep getting better |
+| Hallucination (brief) | Why models confidently make things up |
+| Quantization (brief) | Shrinking a model by storing its numbers with fewer bits |
+| Running locally: Ollama (brief) | Running real models on your own machine |
+| KV cache (brief) | Reusing past attention work so generation is fast |
+| HF transformers/datasets/tiktoken | Ready-made tokenizers, datasets and pretrained models |
+| Prompting / system prompts | Steering a model with instructions |
+| Embeddings + vector DB | Storing text as vectors and searching by meaning |
+| RAG (full depth) | Retrieving relevant text and giving it to the model to answer from; how you actually ask questions about the book |

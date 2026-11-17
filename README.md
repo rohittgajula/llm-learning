@@ -2,24 +2,32 @@
 
 Learning how LLMs work, from math basics to building a tiny GPT on a book.
 
-- [ROADMAP.md](ROADMAP.md): the map, how topics connect, and what each one teaches
-- `notes/`: LearnHarness exports (`notes/LLMs.md` is the main session)
-- `scripts/`: auto-push on export
+- [ROADMAP.md](ROADMAP.md): the course map from LearnHarness and what each node teaches
+- `notes/`: LearnHarness exports (`notes/LLMs.md` is the main session). Never edit these by hand.
+- `scripts/`: the auto-sync job
+- [SETUP-OTHER-LAPTOP.md](SETUP-OTHER-LAPTOP.md): instructions to give Claude on another laptop
 
 ## How syncing works
-Export from LearnHarness into `notes/` (overwrite `LLMs.md`). Within a few seconds the change is committed and pushed to GitHub automatically.
+Export from LearnHarness into **Desktop → lms-learning → notes**, overwriting `LLMs.md`. A background job then:
 
-## Setting up the other laptop
-```bash
-git clone https://github.com/rohittgajula/lms-learning.git ~/lms-learning
-bash ~/lms-learning/scripts/install-autopush.sh
-```
-The real folder is `~/lms-learning`; the installer puts a shortcut to it on the Desktop (macOS blocks background jobs from reading Desktop directly).
+1. Waits until the export has finished writing (no change for 3 seconds).
+2. Commits it **before** pulling anything, so nothing on this laptop can be overwritten.
+3. Pulls the other laptop's exports.
+4. Pushes, and shows a "Notes saved to GitHub" notification.
 
-Before studying there, run `git -C ~/lms-learning pull` to get the latest export.
+It runs whenever `notes/` changes, every 5 minutes, and at login, so it also keeps this laptop up to date.
 
-## Resuming in LearnHarness on another laptop
-Attach `notes/LLMs.md` and send:
+- **Offline:** the export is committed locally and pushed on the next run once you're back online.
+- **Both laptops changed `LLMs.md`:** the GitHub version stays as `LLMs.md` and this laptop's version is saved beside it as `LLMs.conflict-<laptop>-<time>.md`, with a notification. Nothing is lost; you pick which to keep.
+- **Export saved as `LLMs (1).md`:** that's a second file, not an overwrite. It still syncs, but delete the old one or rename so there's one main file.
+- **Log:** `~/Library/Logs/lms-learning-autopush.log`
+
+The real folder is `~/lms-learning`; the Desktop item is a shortcut to it (macOS blocks background jobs from reading Desktop directly).
+
+## Switching laptops
+1. On the laptop you're leaving, export from LearnHarness and wait for the "Notes saved to GitHub" notification.
+2. On the other laptop the job pulls within 5 minutes. To get it right away: `git -C ~/lms-learning pull`
+3. In LearnHarness there, attach `notes/LLMs.md` and send:
 
 ```text
 I'm continuing an existing learning session from another device. The attached file is the full transcript so far: the learner profile, the probe results, the roadmap, and the lessons completed.
